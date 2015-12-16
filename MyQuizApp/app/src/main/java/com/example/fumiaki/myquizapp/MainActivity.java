@@ -9,7 +9,17 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.Buffer;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+
+    private ArrayList<String[]> quizSet = new ArrayList<String[]>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,35 +28,30 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        loadQuizSet();
+    }
+
+    private void loadQuizSet() {
+        InputStream inputStream = null;
+        BufferedReader bufferedReader = null;
+        try {
+            inputStream = getAssets().open("quiz.txt");
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String s;
+            while ((s = bufferedReader.readLine()) != null) {
+                quizSet.add(s.split("¥t"));
             }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) inputStream.close();
+                if (bufferedReader != null) bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        return super.onOptionsItemSelected(item);
     }
+
+
 }
